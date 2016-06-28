@@ -1,0 +1,22 @@
+(prefix ((dbo: <http://dbpedia.org/ontology/>)
+         (foaf: <http://xmlns.com/foaf/0.1/>))
+  (project (?person ?name ?birthDate ?deathDate)
+    (extend ((?deathDate ?.2))
+      (extend ((?birthDate ?.1))
+        (extend ((?name ?.0))
+          (group (?person) ((?.0 (sample ?_name)) (?.1 (sample ?_birthDate)) (?.2 (sample ?_deathDate)))
+            (leftjoin
+              (join
+                (slice 0 10000
+                  (project (?person)
+                    (distinct
+                      (project (?person)
+                        (order (?person)
+                          (bgp
+                            (triple ?person <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> foaf:Person)
+                            (triple ?person foaf:name ??0)
+                            (triple ?person dbo:birthDate ??1)))))))
+                (bgp
+                  (triple ?person foaf:name ?_name)
+                  (triple ?person dbo:birthDate ?_birthDate)))
+              (bgp (triple ?person dbo:deathDate ?_deathDate)))))))))

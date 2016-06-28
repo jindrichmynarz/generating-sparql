@@ -1,0 +1,48 @@
+@prefix :     <http://example.com/> .
+@prefix dbo:  <http://dbpedia.org/ontology/> .
+@prefix foaf: <http://xmlns.com/foaf/0.1/> .
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix sp:   <http://spinrdf.org/sp#> .
+
+_:person sp:varName "person" .
+_:name sp:varName "_name" .
+_:birthDate sp:varName "_birthDate" .
+_:deathDate sp:varName "_deathDate" .
+
+:query a sp:Select, sp:Query ; 
+  rdfs:comment "Get persons from DBpedia"@en ;
+  sp:resultVariables (_:person
+                      [ a sp:Sample ;
+                        sp:expression _:name ;
+                        sp:as [ sp:varName "name" ]]
+                      [ a sp:Sample ;
+                        sp:expression _:birthDate ;
+                        sp:as [ sp:varName "birthDate" ]]
+                      [ a sp:Sample ;
+                        sp:expression _:deathDate ;
+                        sp:as [ sp:varName "deathDate" ]]) ;
+  sp:where ([ a sp:SubQuery ;
+              sp:query [ a sp:Select ;
+                         sp:resultVariables (_:person) ;
+                         sp:where ([ a sp:SubQuery ;
+                                     sp:query [ a sp:Select ;
+                                                sp:resultVariables (_:person) ;
+                                                sp:distinct true ;
+                                                sp:where ([ sp:subject _:person ;
+                                                            sp:predicate rdf:type ;
+                                                            sp:object foaf:Person ]) ;
+                                                sp:orderBy (_:person) ]]) ;
+                         sp:limit 10000 ;
+                         sp:offset 0 ]]
+             [ sp:subject _:person ;
+               sp:predicate foaf:name ;
+               sp:object _:name ]
+             [ sp:subject _:person ;
+               sp:predicate dbo:birthDate ;
+               sp:object _:birthDate ]
+             [ a sp:Optional ;
+               sp:elements ([ sp:subject _:person ;
+                              sp:predicate dbo:deathDate ;
+                              sp:object _:deathDate ])]) ;
+  sp:groupBy (_:person) .

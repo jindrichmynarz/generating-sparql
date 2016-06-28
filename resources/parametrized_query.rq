@@ -1,0 +1,31 @@
+PREFIX dbo:  <http://dbpedia.org/ontology/>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+
+SELECT ?person
+       (SAMPLE(?_name) AS ?name)
+       (SAMPLE(?_birthDate) AS ?birthDate)
+       (SAMPLE(?_deathDate) AS ?deathDate)
+WHERE {
+  {
+    SELECT ?person
+    WHERE {
+      {
+        SELECT DISTINCT ?person
+        WHERE {
+          ?person a foaf:Person ;
+            foaf:name [] ;
+            dbo:birthDate [] .
+        }
+        ORDER BY ?person
+      }
+    }
+    LIMIT ?limit
+    OFFSET ?offset
+  }
+  ?person foaf:name ?_name ;
+    dbo:birthDate ?_birthDate .
+  OPTIONAL {
+    ?person dbo:deathDate ?_deathDate .
+  }
+}
+GROUP BY ?person

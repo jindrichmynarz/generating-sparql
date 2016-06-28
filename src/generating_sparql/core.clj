@@ -1,0 +1,1 @@
+(ns generating-sparql.core)

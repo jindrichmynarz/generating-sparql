@@ -1,0 +1,120 @@
+{
+  "@context" : {
+    "foaf" : "http://xmlns.com/foaf/0.1/",
+    "rdf" : "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
+    "where" : {
+      "@container" : "@list"
+    },
+    "resultVariables" : {
+      "@container" : "@list"
+    },
+    "orderBy" : {
+      "@container" : "@list"
+    },
+    "subject" : {
+      "@type" : "@id"
+    },
+    "@vocab" : "http://spinrdf.org/sp#",
+    "rdfs" : "http://www.w3.org/2000/01/rdf-schema#",
+    "groupBy" : {
+      "@container" : "@list"
+    },
+    "predicate" : {
+      "@type" : "@id"
+    },
+    "elements" : {
+      "@container" : "@list"
+    }
+  },
+  "@graph" : [ {
+    "@type" : "Select",
+    "rdfs:comment" : {
+      "@value" : "Get persons from DBpedia",
+      "@language" : "en"
+    },
+    "resultVariables" : [ {
+      "@id" : "_:person"
+    }, {
+      "@type" : "Sample",
+      "expression" : {
+        "varName" : "_name"
+      }
+    }, {
+      "@type" : "Sample",
+      "expression" : {
+        "varName" : "_birthDate"
+      }
+    }, {
+      "@type" : "Sample",
+      "expression" : {
+        "varName" : "_deathDate"
+      }
+    } ],
+    "where" : [ {
+      "@type" : "SubQuery",
+      "query" : {
+        "@type" : "Select",
+        "resultVariables" : [ {
+          "@id" : "_:person"
+        } ],
+        "where" : [ {
+          "@type" : "SubQuery",
+          "query" : {
+            "@type" : "Select",
+            "resultVariables" : [ {
+              "@id" : "_:person"
+            } ],
+            "distinct" : true,
+            "where" : [ {
+              "subject" : "_:person",
+              "predicate" : "rdf:type",
+              "object" : {
+                "@id" : "foaf:Person"
+              }
+            }, {
+              "subject" : "_:person",
+              "predicate" : "http://xmlns.com/foaf/0.1/name",
+              "object" : { }
+            }, {
+              "subject" : "_:person",
+              "predicate" : "http://dbpedia.org/ontology/birthDate",
+              "object" : { }
+            } ],
+            "orderBy" : [ {
+              "@id" : "_:person"
+            } ]
+          }
+        } ],
+        "limit" : 10000,
+        "offset" : 0
+      }
+    }, {
+      "subject" : "_:person",
+      "predicate" : "http://xmlns.com/foaf/0.1/name",
+      "object" : {
+        "varName" : "_name"
+      }
+    }, {
+      "subject" : "_:person",
+      "predicate" : "http://dbpedia.org/ontology/birthDate",
+      "object" : {
+        "varName" : "_birthDate"
+      }
+    }, {
+      "@type" : "Optional",
+      "elements" : [ {
+        "subject" : "_:person",
+        "predicate" : "http://dbpedia.org/ontology/deathDate",
+        "object" : {
+          "varName" : "_deathDate"
+        }
+      } ]
+    } ],
+    "groupBy" : [ {
+      "@id" : "_:person"
+    } ]
+  }, {
+    "@id" : "_:person",
+    "varName" : "person"
+  } ]
+}
